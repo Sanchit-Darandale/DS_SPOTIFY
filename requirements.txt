@@ -7,3 +7,4 @@ spotipy
 uvicorn[standard]
 requests
 pytube
+python-multipart
