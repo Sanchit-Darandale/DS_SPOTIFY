@@ -3,8 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from utils import search_spotify, download_youtube
 from fastapi.responses import StreamingResponse
 from pytube import Search
-import requests
-import os
+import requests, os, io, yt_dlp
 
 app = FastAPI()
 
@@ -25,13 +24,23 @@ def search(q: str = Query(...), type: str = Query("track")):
 
 @app.get("/download")
 async def download(query: str):
-    from pytube import YouTube
-    results = Search(query).results
-    if not results:
-        return {"error": "No video found"}
-    video = results[0]
-    stream = video.streams.filter(only_audio=True).order_by('abr').desc().first()
-    if stream is None:
-        return {"error": "No audio stream found"}
-    audio_stream = requests.get(stream.url, stream=True)
-    return StreamingResponse(audio_stream.iter_content(1024), media_type="audio/mp4")
+    ydl_opts = {
+        "format": "bestaudio/best",
+        "quiet": True,
+        "noplaylist": True,
+        "extract_flat": "in_playlist",
+        "default_search": "ytsearch",
+        "forcejson": True,
+    }
+
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(query, download=False)
+        url = info['url']
+
+    def generate():
+        import requests
+        with requests.get(url, stream=True) as r:
+            for chunk in r.iter_content(chunk_size=8192):
+                yield chunk
+
+    return StreamingResponse(generate(), media_type="audio/mpeg")
