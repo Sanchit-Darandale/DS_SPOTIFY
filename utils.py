@@ -12,7 +12,7 @@ if not client_id or not client_secret:
 sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=client_id, client_secret=client_secret))
 
 def search_spotify(query, type="track"):
-    return sp.search(query=query, type=type, limit=1)
+    return sp.search(q=query, type=type, limit=1)
 
 def download_youtube(query):
     ydl_opts = {
