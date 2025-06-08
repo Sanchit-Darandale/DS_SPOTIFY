@@ -17,11 +17,26 @@ app.add_middleware(
 
 @app.get("/search")
 def search(q: str = Query(...), type: str = Query("track")):
-    try:
-        return search_spotify(q, type)
-    except Exception as e:
-        return {"error": str(e)}
+    ydl_opts = {
+        "format": "bestaudio/best",
+        "quiet": True,
+        "default_search": "ytsearch",
+        "noplaylist": True,
+    }
 
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(q, download=False)
+        if "entries" in info:
+            info = info["entries"][0]
+        stream_url = info["url"]
+
+    def stream_audio():
+        r = requests.get(stream_url, stream=True)
+        for chunk in r.iter_content(1024):
+            yield chunk
+
+    return StreamingResponse(stream_audio(), media_type="audio/mpeg")
+    
 @app.get("/download")
 async def download(query: str):
     ydl_opts = {
