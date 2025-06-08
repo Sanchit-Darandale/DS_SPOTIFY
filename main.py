@@ -17,9 +17,9 @@ app.add_middleware(
 )
 
 @app.get("/search")
-def search(query: str = Query(...), type: str = Query("track")):
+def search(q: str = Query(...), type: str = Query("track")):
     try:
-        return search_spotify(query, type)
+        return search_spotify(q, type)
     except Exception as e:
         return {"error": str(e)}
 
