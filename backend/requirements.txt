@@ -3,4 +3,6 @@ uvicorn
 httpx
 yt-dlp
 python-dotenv
-spotipy
+spotify
+uvicorn[standard]
+requests
