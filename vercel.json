@@ -1,5 +1,5 @@
 {
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://your-backend.onrender.com/api/$1" }
+    { "source": "/api/(.*)", "destination": "https://first-project-jy9b.onrender.com/api/$1" }
   ]
 }
