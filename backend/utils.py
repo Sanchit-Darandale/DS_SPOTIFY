@@ -3,8 +3,8 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import spotipy
 from yt_dlp import YoutubeDL
 
-client_id = os.getenv("SPOTIFY_CLIENT_ID")
-client_secret = os.getenv("SPOTIFY_CLIENT_SECRET")
+client_id = os.getenv("SPOTIFY_CLIENT_ID", "031cec83776147258a0bc6a4a9c258c6")
+client_secret = os.getenv("SPOTIFY_CLIENT_SECRET", "f6faf8eb6e4a48449050732898f48c9a")
 
 if not client_id or not client_secret:
     raise ValueError("Missing SPOTIFY_CLIENT_ID or SPOTIFY_CLIENT_SECRET")
