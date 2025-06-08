@@ -1,6 +1,10 @@
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from utils import search_spotify, download_youtube
+from fastapi.responses import StreamingResponse
+from pytube import Search
+import requests
+import os
 
 app = FastAPI()
 
@@ -20,9 +24,14 @@ def search(q: str = Query(...), type: str = Query("track")):
         return {"error": str(e)}
 
 @app.get("/download")
-def download(query: str):
-    try:
-        return download_youtube(query)
-    except Exception as e:
-        return {"error": str(e)}
-      
+async def download(query: str):
+    from pytube import YouTube
+    results = Search(query).results
+    if not results:
+        return {"error": "No video found"}
+    video = results[0]
+    stream = video.streams.filter(only_audio=True).order_by('abr').desc().first()
+    if stream is None:
+        return {"error": "No audio stream found"}
+    audio_stream = requests.get(stream.url, stream=True)
+    return StreamingResponse(audio_stream.iter_content(1024), media_type="audio/mp4")
