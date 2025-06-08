@@ -1,8 +1,0 @@
-fastapi
-uvicorn
-httpx
-yt-dlp
-python-dotenv
-spotipy
-uvicorn[standard]
-requests
