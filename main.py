@@ -38,7 +38,6 @@ async def download(query: str):
         url = info['url']
 
     def generate():
-        import requests
         with requests.get(url, stream=True) as r:
             for chunk in r.iter_content(chunk_size=8192):
                 yield chunk
